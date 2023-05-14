@@ -1,3 +1,6 @@
 Name,Query
 GetAll, SELECT * from main
 GetAllSample, Select * from main_sample
+FindBiggestAirports,"SELECT Origin, COUNT(*) AS num_flights FROM main GROUP BY Origin ORDER BY num_flights DESC LIMIT 3;
+"
+,
