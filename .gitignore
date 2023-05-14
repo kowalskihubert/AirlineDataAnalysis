@@ -1,5 +1,6 @@
 ./.idea/*.xml
-.idea/
+database/dataverse_files
+database/dataverse_files_sample
+database/dataverse_files_unmodified
 workspace.xml
-database/
 passwd.txt
