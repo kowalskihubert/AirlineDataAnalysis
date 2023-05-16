@@ -3,69 +3,61 @@ title: "R Notebook"
 output: ioslides_presentation
 css: ./styles.css
 ---
+```{r setup, include=FALSE}
+source("../src/utils/MySqlConnect.R", local = knitr::knit_global())
 
-# First section
-
-## First slide{#first}
-
-The [R plugin](https://www.jetbrains.com/help/pycharm/r-plugin-support.html) for IntelliJ-based IDEs provides
-handy capabilities to work with the [R Markdown](https://www.jetbrains.com/help/pycharm/r-markdown.html) files.
-To [add](https://www.jetbrains.com/help/pycharm/r-markdown.html#add-code-chunk) a new R chunk,
-position the caret at any line or the code chunk, then click "+".
-
-## Second slide
-
-Type any R code in the chunk and check the result:
-
-```{r, echo = FALSE}
-Ixos <- rnorm(4000, 120, 30)
-Primadur <- rnorm(4000, 200, 30)
-
-hist(Ixos, breaks = 30, xlim = c(0, 300), col = rgb(1, 0, 0, 0.5), xlab = "height",
-     ylab = "nbr of plants", main = "distribution of height")
-hist(Primadur, breaks = 30, xlim = c(0, 300), col = rgb(0, 0, 1, 0.5), add = T)
-legend("topright", legend = c("Ixos", "Primadur"), col = c(rgb(1, 0, 0, 0.5),
-                                                           rgb(0, 0, 1, 0.5)), pt.cex = 2, pch = 15)
 ```
+## Problem
 
-# Second section
+## Największe lotniska w USA
+Query:
+```{r}
+cat(queries$FindBiggestAirports)
 
-## Third slide
+```
+Res:
+```{r}
+read.csv("../src/passenger/outputs/biggestAirports.csv")
+```
+## Najbardziej opóźniane loty z Chicago
+Query:
+```{r}
+cat(queries$MostDelayedChicagoFlights)
 
-```{r, echo = FALSE, eval=FALSE}
+```
+Res:
+```{r}
+read.csv("../src/passenger/outputs/MostDelayedChicagoFlights.csv")
+```
+CVG - Cincinnati/Northern Kentucky International Airport
 
-ui <- fluidPage({
-  titlePanel("Hello!")
+## Loty Chicago -> Covington
+Query:
+```{r}
+cat(queries$FlightsFromChicagoToCovington)
 
-  # Sidebar layout with input and output definitions ----
-  sidebarLayout(
+```
+Res:
+```{r}
+head(read.csv("../src/passenger/outputs/FlightsFromChicagoToCovington.csv"))
+```
+## Loty Chicago -> Covington + Pogoda
+Query:
+```{r}
+cat(queries$ChicagoCovingtonWeather)
 
-    # Sidebar panel for inputs ----
-    sidebarPanel(
-      textInput(inputId = "imie", "Podaj swoje imię: ")
-    ),
-
-    # Main panel for outputs ----
-    mainPanel(
-      textOutput("przywitanie")
-    )
-  )
-  
-}) 
-
-# Define server logic  ----
-server <- function(input, output) {
-  output$przywitanie <- renderText({
-    paste("Witaj", input$imie)
-    })
+```
+Res:
+```{r}
+res <- head(read.csv("../src/passenger/outputs/ChicagoCovingtonWeather.csv"), 1)
+for (col in colnames(res)) {
+  cat(col, res[[col]], "\n")
 }
-shinyApp(ui, server)
 ```
-
-## Fourth slide
-
-Jakas nowa tresc
-Troche wiecej tresci
-
-### Co to bedzie
-
+## Wyniki
+```{r , include=FALSE}
+source("../src/passenger/WeatherConditionsOld.R", local = knitr::knit_global())
+```
+```{r }
+analysis()
+```

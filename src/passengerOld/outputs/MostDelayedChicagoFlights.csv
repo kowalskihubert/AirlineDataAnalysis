@@ -1,0 +1,4 @@
+"Dest","TotalFlights","AVG(ArrDelay)","AVG(DepDelay)","Avg(TaxiIn)","Avg(TaxiOut)","SUM(Cancelled)","Avg(WeatherDelay)","Avg(LateAircraftDelay)"
+"CVG",1204,71.4357,64.5576,3.8253,22.2845,302,41.0966,7.4996
+"PHL",1075,100.4625,93.8551,6.0781,20.5069,288,39.4012,28.1551
+"JFK",582,80.9008,69.4476,10,21.8807,229,36.3125,6.3826
