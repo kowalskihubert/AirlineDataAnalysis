@@ -4,3 +4,7 @@ database/dataverse_files_sample
 database/dataverse_files_unmodified
 workspace.xml
 passwd.txt
+.DS_Store
+database/.DS_Store
+src/.DS_Store
+.Rhistory
