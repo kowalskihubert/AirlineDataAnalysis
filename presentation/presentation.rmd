@@ -43,16 +43,28 @@ ui <- fluidPage(
 
     # Sidebar panel for inputs ----
     sidebarPanel(
-
+      textInput(inputId = "imie", "Podaj swoje imię: ")
     ),
 
     # Main panel for outputs ----
     mainPanel(
+      textOutput("przywitanie")
+    
     )
   )
 )
 # Define server logic  ----
 server <- function(input, output) {
+  output$przywitanie <- renderText({
+    paste("Witaj", input$imie)
+    })
 }
 shinyApp(ui, server)
 ```
+
+## Fourth slide
+
+Jakas nowa tresc
+Troche wiecej tresci
+
+### Co to bedzie

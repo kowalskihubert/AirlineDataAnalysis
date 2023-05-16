@@ -1,3 +1,4 @@
-Name,Query
-GetAll, SELECT * from main
-GetAllSample, Select * from main_sample
+Name;Query
+GetAll; SELECT * from main
+GetAllSample; Select * from main_sample
+TestSample; SELECT Dest, AVG(DepDelay) from main_sample GROUP BY Dest
