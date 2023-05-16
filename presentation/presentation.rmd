@@ -32,6 +32,40 @@ legend("topright", legend = c("Ixos", "Primadur"), col = c(rgb(1, 0, 0, 0.5),
 
 ## Third slide
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval=FALSE}
 
+ui <- fluidPage({
+  titlePanel("Hello!")
+
+  # Sidebar layout with input and output definitions ----
+  sidebarLayout(
+
+    # Sidebar panel for inputs ----
+    sidebarPanel(
+      textInput(inputId = "imie", "Podaj swoje imię: ")
+    ),
+
+    # Main panel for outputs ----
+    mainPanel(
+      textOutput("przywitanie")
+    )
+  )
+  
+}) 
+
+# Define server logic  ----
+server <- function(input, output) {
+  output$przywitanie <- renderText({
+    paste("Witaj", input$imie)
+    })
+}
+shinyApp(ui, server)
 ```
+
+## Fourth slide
+
+Jakas nowa tresc
+Troche wiecej tresci
+
+### Co to bedzie
+

@@ -1,9 +1,9 @@
 library(RMySQL)
 library(DBI)
 library(readr)
-db <- dbConnect(RMySQL::MySQL(), user = 'predki', password = read_file("./passwd.txt"), dbname = 'airplanes', host = 'localhost')
+db <- dbConnect(RMySQL::MySQL(), user = 'root', password = read_file("./passwd.txt"), dbname = 'airplanes', host = 'localhost')
 
-queries_csv <- read.csv("./src/queries.csv", header = T)
+queries_csv <- read.csv("./src/queries.csv", header = T, sep=";")
 
 name_vec <- queries_csv$Name
 query_vec <- queries_csv$Query
