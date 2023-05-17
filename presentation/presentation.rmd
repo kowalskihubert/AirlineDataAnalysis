@@ -17,7 +17,7 @@ cat(queries$FindBiggestAirports)
 ```
 Res:
 ```{r}
-read.csv("../src/passenger/outputs/biggestAirports.csv")
+read.csv("../src/weather/outputs/biggestAirports.csv")
 ```
 ## Najbardziej opóźniane loty z Chicago
 Query:
@@ -27,7 +27,7 @@ cat(queries$MostDelayedChicagoFlights)
 ```
 Res:
 ```{r}
-read.csv("../src/passenger/outputs/MostDelayedChicagoFlights.csv")
+read.csv("../src/weather/outputs/MostDelayedChicagoFlights.csv")
 ```
 CVG - Cincinnati/Northern Kentucky International Airport
 
@@ -39,7 +39,7 @@ cat(queries$FlightsFromChicagoToCovington)
 ```
 Res:
 ```{r}
-head(read.csv("../src/passenger/outputs/FlightsFromChicagoToCovington.csv"))
+head(read.csv("../src/weather/outputs/FlightsFromChicagoToCovington.csv"))
 ```
 ## Loty Chicago -> Covington + Pogoda
 Query:
@@ -49,14 +49,14 @@ cat(queries$ChicagoCovingtonWeather)
 ```
 Res:
 ```{r}
-res <- head(read.csv("../src/passenger/outputs/ChicagoCovingtonWeather.csv"), 1)
+res <- head(read.csv("../src/weather/outputs/ChicagoCovingtonWeather.csv"), 1)
 for (col in colnames(res)) {
   cat(col, res[[col]], "\n")
 }
 ```
 ## Wyniki
 ```{r , include=FALSE}
-source("../src/passenger/WeatherConditionsOld.R", local = knitr::knit_global())
+source("../src/weather/WeatherConditionsOld.R", local = knitr::knit_global())
 ```
 ```{r }
 analysis()

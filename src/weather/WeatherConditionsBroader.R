@@ -64,23 +64,24 @@ createHeatMap <- function() {
   return(plots)
 }
 
-createHeatMap()
-
-for (i in mean_delays_list) {
-  title <- substr(colnames(i)[[1]], 1, nchar(colnames(i)[[1]]) - 3)
-  data <- i
-  print(data)
-  x <- rep(data[[1]], each = 5)
-  value <- as.vector(t(as.matrix(data[-1])))
-  condition <- rep(c("MeanWeatherDelay", "MeanArrDelay", "MeanDepDelay", "MeanTaxiIn", "MeanTaxiOut"), times = 6)
-  data <- data.frame(x, condition, value)
-  plot <- ggplot(data, aes(fill = x, y = value, x = x)) +
-    geom_bar(position = "dodge", stat = "identity") +
-    labs(title = title, x = "X-axis", y = "Avg delay with such conditions[min]") +
-    facet_wrap(facets = vars(condition), ncol = 2, scales = "free_y") +
-    theme(axis.text.x = element_blank()) +
-    guides(fill = guide_legend(title = paste(title, " bins")))
-  ggsave(paste0("src/passenger/outputs/plotsBroader/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
-  plots[[cnt]] <- plot
-  cnt <- cnt + 1
+createBarGraphs <- function() {
+  cnt <- 1
+  for (i in mean_delays_list) {
+    title <- substr(colnames(i)[[1]], 1, nchar(colnames(i)[[1]]) - 3)
+    data <- i
+    x <- rep(data[[1]], each = 5)
+    value <- as.vector(t(as.matrix(data[-1])))
+    condition <- rep(c("MeanWeatherDelay", "MeanArrDelay", "MeanDepDelay", "MeanTaxiIn", "MeanTaxiOut"), times = 6)
+    data <- data.frame(x, condition, value)
+    plot <- ggplot(data, aes(fill = x, y = value, x = x)) +
+      geom_bar(position = "dodge", stat = "identity") +
+      labs(title = title, x = "X-axis", y = "Avg delay with such conditions[min]") +
+      facet_wrap(facets = vars(condition), ncol = 2, scales = "free_y") +
+      theme(axis.text.x = element_blank()) +
+      guides(fill = guide_legend(title = paste(title, " bins")))
+    ggsave(paste0("src/passenger/outputs/plotsBroader/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
+    plots[[cnt]] <- plot
+    cnt <- cnt + 1
+  }
+  return(plots)
 }

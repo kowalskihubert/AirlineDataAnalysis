@@ -1,6 +1,6 @@
 library(RMySQL)
 
-source("./src/utils/MySqlConnect.R")
+source("../utils/MySqlConnect.R")
 
 dbListTables(db)
 print(queries)

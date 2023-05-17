@@ -8,7 +8,7 @@ library(tidyverse)
 source("./src/utils/MySqlConnect.R")
 
 # write.csv(dbGetQuery(db, queries$FindBiggestAirports),
-#           file = "src/passenger/outputs/delayedAirports.csv", row.names = FALSE)
+#           file = "src/weather/outputs/delayedAirports.csv", row.names = FALSE)
 #
 write.csv(dbGetQuery(db, queries$AtlantaDestinationsWithWeatherDelays),
           file = "src/passenger/outputs/atlantaDestinations.csv", row.names = FALSE)
