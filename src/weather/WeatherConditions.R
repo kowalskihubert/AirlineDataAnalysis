@@ -82,6 +82,8 @@ createHeatMap <- function() {
   return(plots)
 }
 
+plots <- list()
+cnt <- 1
 for (i in mean_delays_list) {
   title <- substr(colnames(i)[[1]], 1, nchar(colnames(i)[[1]]) - 3)
   data <- i
@@ -96,7 +98,7 @@ for (i in mean_delays_list) {
     facet_wrap(facets = vars(condition), ncol = 2, scales = "free_y") +
     theme(axis.text.x = element_blank()) +
     guides(fill = guide_legend(title = paste(title, " bins")))
-  ggsave(paste0("src/passenger/outputs/plots/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
+  ggsave(paste0("src/weather/outputs/plots/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
   plots[[cnt]] <- plot
   cnt <- cnt + 1
 }

@@ -45,7 +45,8 @@ AtlantaBTWeather,"SELECT
 from AtlantaBT a
 inner join `atlanta-weather` aw on (a.date = aw.DATE)
 inner join `br-weather` bw on a.date = bw.DATE
-group by date"
+group by date
+Having WeatherDelay >= 0"
 AtlantaAnwhr,"Select m.date,
        Count(*)            as Flights,
        sum(m.Cancelled)    as Cancelled,
@@ -64,4 +65,5 @@ AtlantaAnwhr,"Select m.date,
        avg(w.TMIN)         as TMIN
 from atlanta m
          inner join `atlanta-weather` w on (m.date = w.date)
-group by m.date"
+group by m.date
+Having WeatherDelay >= 0"

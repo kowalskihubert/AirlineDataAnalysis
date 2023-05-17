@@ -79,9 +79,11 @@ createBarGraphs <- function() {
       facet_wrap(facets = vars(condition), ncol = 2, scales = "free_y") +
       theme(axis.text.x = element_blank()) +
       guides(fill = guide_legend(title = paste(title, " bins")))
-    ggsave(paste0("src/passenger/outputs/plotsBroader/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
+    ggsave(paste0("src/weather/outputs/plotsBroader/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
     plots[[cnt]] <- plot
     cnt <- cnt + 1
   }
   return(plots)
 }
+
+createBarGraphs()

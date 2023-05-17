@@ -50,4 +50,3 @@ from AtlantaBT a
 inner join `atlanta-weather` aw on (a.date = aw.DATE)
 inner join `br-weather` bw on a.date = bw.DATE
 group by date
-
