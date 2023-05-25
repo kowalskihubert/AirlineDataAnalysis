@@ -1,5 +1,7 @@
 ﻿# AirlineDataAnalysis
 
+[LIVE SERVER](https://adamkaniasty.github.io/AirlineDataAnalysis/)
+
 Ilościowe:
 
 - czy istnieje zależność między ilością lotów w danym momencie czasu (np. na jednego mieszkańca) a pkb per capita w tym
