@@ -1,4 +1,6 @@
 library(leaflet)
+library(maps)
+library(ggplot2)
 
 assign_shades_of_red <- function(data_input) {
   mapStates <- map("state", fill = TRUE, plot = FALSE)
@@ -51,5 +53,14 @@ states_weather <- read.csv("./src/weather/outputs/StatesWeatherDelays.csv")
 assign_shades_of_red(states_weather_nonzero)
 assign_shades_of_red(states_weather)
 
-mapStates <- map("state", fill = TRUE, plot = FALSE)
+de_monthly <- read.csv("./src/weather/outputs/DE_Monthly.csv")
+
+ggplot(de_monthly, aes(x = month)) +
+  geom_line(aes(y = AvgWeatherDelay, color = "Weather")) +
+  geom_line(aes(y = AvgDepDelay, color = "Departure")) +
+  ggtitle("Monthly Weather Delays") +
+  xlab("Month") +
+  ylab("Avg Weather Delay (minutes)") +
+  scale_x_continuous(breaks = de_monthly$month)
+
 
