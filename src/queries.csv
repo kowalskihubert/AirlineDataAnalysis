@@ -67,3 +67,6 @@ from atlanta m
          inner join `atlanta-weather` w on (m.date = w.date)
 group by m.date
 Having WeatherDelay >= 0"
+PresentWeatherData,"Select * from `atlanta-weather`
+where TSUN is not null and AWND is not null and PRCP is not null and TMAX is not null and TMIN is not null and SNOW is not null and SNWD is not null
+limit 3;"

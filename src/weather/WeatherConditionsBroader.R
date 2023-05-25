@@ -40,6 +40,19 @@ for (col in tail(colnames(data), 7)) {
   cancellation_list[[col]] <- cancellation_matrix
 }
 
+weatherDelayOvertime <- function() {
+  subset_data <- data %>%
+    filter(WeatherDelay != 0) %>%
+    select(date, WeatherDelay)
+  subset_data$date <- as.Date(subset_data$date)
+  subset_data$Month <- month(subset_data$date)
+  plot <- ggplot(subset_data, aes(x = Month, y = WeatherDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE) +
+    labs(x = "Month", y = "Weather Delay")
+  ggsave("src/weather/outputs/plotsBroader/weatherDelayOvertime.png", plot = plot, width = 10, height = 10, dpi = 300)
+}
+
 createHeatMap <- function() {
   heat_matrix <- data.frame(matrix(ncol = 0, nrow = 6), row.names = c("Bin1", "Bin2", "Bin3", "Bin4", "Bin5", "Bin6"))
   for (i in cancellation_list) {
@@ -61,8 +74,8 @@ createHeatMap <- function() {
     scale_fill_gradient(low = "white", high = "red") +
     labs(title = "Heatmap Plot")
   plots <- list(heatPlot, heatPlot2)
-  return(plots)
-}
+  ggsave("src/weather/outputs/plotsBroader/heatmap.png", plot = heatPlot, width = 10, height = 10, dpi = 300)
+  ggsave("src/weather/outputs/plotsBroader/heatmap2.png", plot = heatPlot2, width = 10, height = 10, dpi = 300) }
 
 createBarGraphs <- function() {
   cnt <- 1
@@ -79,11 +92,13 @@ createBarGraphs <- function() {
       facet_wrap(facets = vars(condition), ncol = 2, scales = "free_y") +
       theme(axis.text.x = element_blank()) +
       guides(fill = guide_legend(title = paste(title, " bins")))
-    ggsave(paste0("src/weather/outputs/plotsBroader/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
+    ggsave(paste0("src/weather/outputs/plotsBroader/", title, ".png"), plot = plot, width = 15, height = 10, dpi = 300)
     plots[[cnt]] <- plot
     cnt <- cnt + 1
   }
   return(plots)
 }
 
+weatherDelayOvertime()
+createHeatMap()
 createBarGraphs()
