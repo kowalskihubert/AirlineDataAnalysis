@@ -2,8 +2,8 @@ library(RMySQL)
 library(leaflet)
 library(maps)
 
-cascade <- read.csv("./src/weather/outputs/cascade.csv")
-cascadeWeather <- read.csv("./src/weather/outputs/cascadeWeather.csv")
+cascade <- read.csv("../src/weather/outputs/cascade.csv")
+cascadeWeather <- read.csv("../src/weather/outputs/cascadeWeather.csv")
 
 mapCities <- function(data, data2) {
   mapStates <- map("state", fill = TRUE, plot = FALSE)
@@ -76,4 +76,3 @@ mapCities <- function(data, data2) {
   return(map)
 }
 
-mapCities(cascade, cascadeWeather)

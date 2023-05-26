@@ -19,7 +19,6 @@ assign_shades_of_red <- function(data_input) {
   max_avgWeatherDelays <- max(avgWeatherDelays)
   min_avgWeatherDelays <- min(avgWeatherDelays)
   color <- colorNumeric(palette = "Reds", domain = c(min_avgWeatherDelays, max_avgWeatherDelays))(avgWeatherDelays)
-  print(c(color, avgWeatherDelays))
   map <- leaflet(mapStates) %>%
     addProviderTiles(providers$Stamen.Toner) %>%
     setView(lng = -98.5833, lat = 39.8333, zoom = 4)
@@ -47,20 +46,13 @@ assign_shades_of_red <- function(data_input) {
   return(map)
 }
 
-states_weather_nonzero <- read.csv("./src/weather/outputs/StatesWeatherDelaysNonzero.csv")
-states_weather <- read.csv("./src/weather/outputs/StatesWeatherDelays.csv")
-
-assign_shades_of_red(states_weather_nonzero)
-assign_shades_of_red(states_weather)
-
-de_monthly <- read.csv("./src/weather/outputs/DE_Monthly.csv")
-
-ggplot(de_monthly, aes(x = month)) +
-  geom_line(aes(y = AvgWeatherDelay, color = "Weather")) +
-  geom_line(aes(y = AvgDepDelay, color = "Departure")) +
-  ggtitle("Monthly Weather Delays") +
-  xlab("Month") +
-  ylab("Avg Weather Delay (minutes)") +
-  scale_x_continuous(breaks = de_monthly$month)
-
+DE_plot <- function(de_monthly) {
+  ggplot(de_monthly, aes(x = month)) +
+    geom_line(aes(y = AvgWeatherDelay, color = "Weather")) +
+    geom_line(aes(y = AvgDepDelay, color = "Departure")) +
+    ggtitle("Monthly Weather Delays") +
+    xlab("Month") +
+    ylab("Avg Weather Delay (minutes)") +
+    scale_x_continuous(breaks = de_monthly$month)
+}
 

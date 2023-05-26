@@ -1,5 +1,5 @@
 ---
-title: "Hajs skacze jak Chanel, hajs skacze jak tyczkarz"
+title: "Mó wi li mi że nikim nie bęęęęędęęęęęę"
 output: ioslides_presentation
 css: ./styles.css
 ---
@@ -279,3 +279,100 @@ Inne wykresy
 <summary>Delay heatmap2</summary>
 <img alt="Delay heatmap2" src="../src/weather/outputs/plotsBroader/heatmap2.png" width="50%" height="70%"/>
 </details>
+
+# Analiza pogodowa na szerszą skalę
+
+## Opóźnienia kaskadowe i ich zależnośc od pogody
+
+Opóźnienia kaskadowe, bez względu na pogodę
+<details>
+<summary>Query</summary>
+```{sql eval=FALSE, connection=db, }
+SELECT
+    city,
+    count(*) as totalFlights,
+    avg(LateAircraftDelay) as avgLateAircraftDelay,
+    avg(latitude) as Latitude,
+    avg(longitude) as Longitude
+from main m
+inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
+where LateAircraftDelay > 0 and year between 2000 and 2008
+group by city
+having totalFlights > 5000
+order by avgLateAircraftDelay desc
+limit 50;
+```
+</details>
+
+
+Opóźniania kaskadowe, gdzie wystąpiło opóźnienie pogodowe
+<details>
+<summary>Query</summary>
+```{sql eval=FALSE, connection=db, }
+SELECT
+    city,
+    count(*) as totalFlights,
+    avg(LateAircraftDelay) as avgLateAircraftDelay,
+    avg(latitude) as Latitude,
+    avg(longitude) as Longitude
+from main m
+inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
+where LateAircraftDelay > WeatherDelay and WeatherDelay > 0 and year between 2000 and 2008
+group by city
+having totalFlights > 500
+order by avgLateAircraftDelay desc
+limit 50;
+```
+</details>
+
+Rezultat
+```{r echo=FALSE, fig.height=5, fig.width=15}
+source("../src/weather/weatherCascade.R", local = knitr::knit_global())
+cascade <- read.csv("../src/weather/outputs/cascade.csv")
+cascadeWeather <- read.csv("../src/weather/outputs/cascadeWeather.csv")
+mapCities(cascade, cascadeWeather)
+```
+
+## Opóźnienia pogodowe a poszczególne stany
+<details>
+<summary>Query</summary>
+```{sql eval=FALSE, connection=db, }
+SELECT s.state           as StateName,
+       a.state           as StateShort,
+       avg(c.latitude)   as Latitude,
+       avg(c.longitude)  as Longitude,
+       avg(WeatherDelay) as AvgWeatherDelay,
+       sum(Cancelled)    as CancelledFlights
+from main m
+         inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
+         inner join states s ON (Trim('"' from a.state) = Trim(s.Abbreviation))
+         inner join capitals c ON (Trim('"' from s.state) = Trim(c.name))
+where WeatherDelay >= 0
+group by s.state, a.state
+order by s.state;
+
+
+SELECT year,month,
+avg(DepDelay)     as AvgDepDelay,
+avg(WeatherDelay) as AvgWeatherDelay,
+sum(Cancelled)    as CancelledFlights
+
+from main m
+inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
+WHERE state = '"DE"' and( WeatherDelay >= 0 or Cancelled = 1)
+group by year,month
+order by year,month;
+```
+</details>
+
+```{r echo=FALSE, fig.height=5, fig.width=15}
+source("../src/weather/StateWeatherDelays.R", local = knitr::knit_global())
+states_weather_nonzero <- read.csv("../src/weather/outputs/StatesWeatherDelaysNonzero.csv")
+states_weather <- read.csv("../src/weather/outputs/StatesWeatherDelays.csv")
+de_monthly <- read.csv("../src/weather/outputs/DE_Monthly.csv")
+
+assign_shades_of_red(states_weather_nonzero)
+assign_shades_of_red(states_weather)
+DE_plot(de_monthly)
+```
+
