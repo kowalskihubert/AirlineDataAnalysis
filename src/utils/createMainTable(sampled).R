@@ -1,5 +1,6 @@
 library(data.table)
 
+# Use your own path to data files
 read_all <- function() {
   arr <- list()
   for (year in 1987:2008) {

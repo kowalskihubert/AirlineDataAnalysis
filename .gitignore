@@ -8,3 +8,4 @@ passwd.txt
 database/.DS_Store
 src/.DS_Store
 .Rhistory
+src/carrier/UnsuccessfulPlotsDump.R
