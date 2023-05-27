@@ -14,6 +14,14 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/presentation/PresentationPredki.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/presentation/PresentationPredki.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/presentation" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/presentation/presentation.rmd">
           <value>
             <RMarkdownRenderProfile>

@@ -14,20 +14,6 @@ write.csv(dbGetQuery(db, queries$AtlantaDestinationsWithWeatherDelays),
           file = "src/passenger/outputs/atlantaDestinations.csv", row.names = FALSE)
 
 
-weatherDelayOvertime <- function() {
-  subset_data <- data %>%
-    filter(WeatherDelay != 0) %>%
-    select(date, WeatherDelay)
-  subset_data$date <- as.Date(subset_data$date)
-  subset_data$Month <- month(subset_data$date, label = TRUE)
-  ggplot(subset_data, aes(x = Month, y = WeatherDelay)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = FALSE) +
-    labs(x = "Month", y = "Weather Delay")
-
-}
-
-
 data <- dbGetQuery(db, queries$AtlantaBTWeather)
 mean_delays_list <- list()
 cancellation_list <- list()
@@ -52,6 +38,19 @@ for (col in tail(colnames(data), 12)) {
   mean_delays <- na.omit(mean_delays)
   mean_delays_list[[col]] <- mean_delays
   cancellation_list[[col]] <- cancellation_matrix
+}
+
+weatherDelayOvertime <- function() {
+  subset_data <- data %>%
+    filter(WeatherDelay != 0) %>%
+    select(date, WeatherDelay)
+  subset_data$date <- as.Date(subset_data$date)
+  subset_data$Month <- month(subset_data$date, label = TRUE)
+  plot <- ggplot(subset_data, aes(x = Month, y = WeatherDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE) +
+    labs(x = "Month", y = "Weather Delay")
+  ggsave("src/weather/outputs/plots/weatherDelayOvertime.png", plot = plot, width = 10, height = 10, dpi = 300)
 }
 
 createHeatMap <- function() {
@@ -79,26 +78,36 @@ createHeatMap <- function() {
     scale_fill_gradient(low = "white", high = "red") +
     labs(title = "Heatmap Plot")
   plots <- list(heatPlot, heatPlot2)
-  return(plots)
+  ggsave("src/weather/outputs/plots/heatmap.png", plot = heatPlot, width = 10, height = 10, dpi = 300)
+  ggsave("src/weather/outputs/plots/heatmap2.png", plot = heatPlot2, width = 10, height = 10, dpi = 300)
 }
 
-plots <- list()
-cnt <- 1
-for (i in mean_delays_list) {
-  title <- substr(colnames(i)[[1]], 1, nchar(colnames(i)[[1]]) - 3)
-  data <- i
-  print(data)
-  x <- rep(data[[1]], each = 5)
-  value <- as.vector(t(as.matrix(data[-1])))
-  condition <- rep(c("MeanWeatherDelay", "MeanArrDelay", "MeanDepDelay", "MeanTaxiIn", "MeanTaxiOut"), times = 4)
-  data <- data.frame(x, condition, value)
-  plot <- ggplot(data, aes(fill = x, y = value, x = x)) +
-    geom_bar(position = "dodge", stat = "identity") +
-    labs(title = title, x = "X-axis", y = "Avg delay with such conditions[min]") +
-    facet_wrap(facets = vars(condition), ncol = 2, scales = "free_y") +
-    theme(axis.text.x = element_blank()) +
-    guides(fill = guide_legend(title = paste(title, " bins")))
-  ggsave(paste0("src/weather/outputs/plots/", title, ".png"), plot = plot, width = 10, height = 10, dpi = 300)
-  plots[[cnt]] <- plot
-  cnt <- cnt + 1
+createPlots <- function() {
+  plots <- list()
+  cnt <- 1
+  for (i in mean_delays_list) {
+    title <- substr(colnames(i)[[1]], 1, nchar(colnames(i)[[1]]) - 3)
+    data <- i
+    print(data)
+    x <- rep(data[[1]], each = 5)
+    value <- as.vector(t(as.matrix(data[-1])))
+    condition <- rep(c("MeanWeatherDelay", "MeanArrDelay", "MeanDepDelay", "MeanTaxiIn", "MeanTaxiOut"), times = 4)
+    data <- data.frame(x, condition, value)
+    plot <- ggplot(data, aes(fill = x, y = value, x = x)) +
+      geom_bar(position = "dodge", stat = "identity") +
+      labs(title = title, x = "X-axis", y = "Avg delay with such conditions[min]") +
+      facet_wrap(facets = vars(condition), ncol = 3, scales = "free_y") +
+      theme(axis.text.x = element_blank()) +
+      theme(plot.title = element_text(size = 20)) +
+      guides(fill = guide_legend(title = paste(title, " bins")))
+    ggsave(paste0("src/weather/outputs/plots/", title, ".png"), plot = plot, width = 15, height = 10, dpi = 300)
+    plots[[cnt]] <- plot
+    cnt <- cnt + 1
+  }
+  return(plots)
+
 }
+
+weatherDelayOvertime()
+createHeatMap()
+createPlots()
