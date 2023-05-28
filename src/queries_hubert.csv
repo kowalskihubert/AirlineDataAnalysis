@@ -107,11 +107,10 @@ CarriersSecProblemsByYear,"SELECT T2.Year, T2.UniqueCarrier as UniqueCarrierCode
         ) AS T2
         ON problemy.UniqueCarrier = T2.UniqueCarrier and problemy.Year = T2.Year
         ORDER BY Year, UniqueCarrierCode;"
-CarriersCarrierProblemsByYear,"SELECT T2.Year, T2.UniqueCarrier as UniqueCarrierCode, Description, NumCarrierProblems, NumPlanesThisYear
+CarriersCarrierDelayHoursByYear,"SELECT T2.Year, T2.UniqueCarrier as UniqueCarrierCode, Description, CollectiveCarrierDelay, NumPlanesThisYear
         FROM (
-          SELECT Year, UniqueCarrier, COUNT(*) as NumCarrierProblems FROM main
-          WHERE (CarrierDelay > 0
-          or CancellationCode = 'A') and Year >= 2003
+          SELECT Year, UniqueCarrier, SUM(CarrierDelay) as CollectiveCarrierDelay FROM main
+          WHERE (CarrierDelay > 0) and Year >= 2003
           GROUP BY UniqueCarrier, Year
         ) AS problemy
         RIGHT JOIN
@@ -126,4 +125,31 @@ CarriersCarrierProblemsByYear,"SELECT T2.Year, T2.UniqueCarrier as UniqueCarrier
           ORDER BY Year
         ) AS T2
         ON problemy.UniqueCarrier = T2.UniqueCarrier and problemy.Year = T2.Year
-        ORDER BY Year, UniqueCarrierCode"
+        ORDER BY Year, UniqueCarrierCode;"
+BestPlanesCatchUp,"WITH addded_row_number AS (
+SELECT *, (ROW_NUMBER() over (PARTITION BY UniqueCarrier ORDER BY AvgCatchUpTime)) AS row_num
+        FROM ( SELECT UniqueCarrier, pd.tailnum, AvgCatchUpTime, iloscWystapien, pd.manufacturer, pd.model, pd.aircraft_type, pd.year, pd.type, pd.engine_type FROM (
+               SELECT UniqueCarrier, TailNum, AVG(ArrDelay - DepDelay) as AvgCatchUpTime, COUNT(*) as iloscWystapien from main
+               WHERE (Year >= 1995)
+                # now we don't need to exclude ArrDelay < -2, because we're looking at the difference
+               GROUP BY UniqueCarrier, TailNum
+               HAVING iloscWystapien > 10  # if the plane has less than 10 flights, it's not reliable
+                    and AvgCatchUpTime is not null
+               ORDER BY UniqueCarrier, AvgCatchUpTime ) AS opoznienia
+                RIGHT JOIN `plane-data` as pd
+                ON pd.tailnum = opoznienia.TailNum
+               ) AS opoznieniaMerged
+) SELECT UniqueCarrier, tailnum, AvgCatchUpTime, iloscWystapien FROM addded_row_number WHERE (row_num = 1 or row_num = 2 or row_num = 3);"
+BestPlanesDep,"WITH addded_row_number AS (
+SELECT *, (ROW_NUMBER() over (PARTITION BY UniqueCarrier ORDER BY AvgDepDelay)) AS row_num
+        FROM ( SELECT UniqueCarrier, pd.tailnum, AvgDepDelay, iloscWystapien, pd.manufacturer, pd.model, pd.aircraft_type, pd.year, pd.type, pd.engine_type FROM (
+               SELECT UniqueCarrier, TailNum, AVG(DepDelay) as AvgDepDelay, COUNT(*) as iloscWystapien from main
+               WHERE Year >= 1995 and DepDelay >= -2
+               GROUP BY UniqueCarrier, TailNum
+               HAVING iloscWystapien > 10  # if the plane has less than 10 flights, it's not reliable
+                    and AvgDepDelay is not null
+               ORDER BY UniqueCarrier, AvgDepDelay ) AS opoznienia
+                RIGHT JOIN `plane-data` as pd
+                ON pd.tailnum = opoznienia.TailNum
+               ) AS opoznieniaMerged
+) SELECT UniqueCarrier, tailnum, AvgDepDelay, iloscWystapien FROM addded_row_number WHERE (row_num = 1 or row_num = 2 or row_num = 3);"

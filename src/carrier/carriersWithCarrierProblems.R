@@ -7,6 +7,8 @@ library(RColorBrewer)
 
 source("./src/utils/MySqlConnect.R")
 
+# write.csv(dbGetQuery(db, queries$CarriersCarrierDelayHoursByYear), "./src/carrier/outputs/Bad_carrier_carrier_in_minutes_by_year.csv", row.names = F)
+
 badCarByYear <- fread(file = "./src/carrier/outputs/Bad_carrier_carrier_in_minutes_by_year.csv")
 
 replace_0 <- badCarByYear$CollectiveCarrierDelay

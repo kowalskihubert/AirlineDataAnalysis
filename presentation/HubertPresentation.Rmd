@@ -1,0 +1,39 @@
+---
+title: "Rytm pracy, nie zwalniam tempa, grind jest znowu, uh, załączany!"
+output: ioslides_presentation
+css: ./styles.css
+---
+
+<!-- # ```{r seteup, include = FALSE}  -->
+
+<!-- # source("../src/utils/MySqlConnect.R", local = knitr::knit_global()) -->
+
+<!-- #  -->
+
+<!-- # ``` -->
+
+```{r include = F} 
+library(dplyr)
+library(data.table)
+library(knitr)
+```
+
+# Spróbujmy jak wyglądają gify
+
+## Carrier Delays
+Tabelka:
+```{r echo = F, out.width="100%"} 
+data <- fread(file = "../src/carrier/outputs/Bad_carrier_carrier_in_minutes_by_year.csv")
+data <- data %>%
+  mutate(CollectiveCarrierDelay = round(CollectiveCarrierDelay/60, 2)) %>%
+  mutate(DelayPerPlane = round(CollectiveCarrierDelay/NumPlanesThisYear, 2))
+
+knitr::kable(head(data, 5))
+```
+
+## Gif:
+![](../src/carrier/plots/carDelayByYear.gif){width=100%,height=100%}
+
+# gif nr 2:
+<img src="../src/carrier/plots/carDelayByYear.gif" width="1000" height="600" />
+
