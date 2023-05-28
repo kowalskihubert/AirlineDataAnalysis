@@ -153,3 +153,14 @@ SELECT *, (ROW_NUMBER() over (PARTITION BY UniqueCarrier ORDER BY AvgDepDelay)) 
                 ON pd.tailnum = opoznienia.TailNum
                ) AS opoznieniaMerged
 ) SELECT UniqueCarrier, tailnum, AvgDepDelay, iloscWystapien FROM addded_row_number WHERE (row_num = 1 or row_num = 2 or row_num = 3);"
+PlanesPerf,"SELECT UniqueCarrier, pd.tailnum, AvgCatchUpTime, iloscWystapien, type, manufacturer, issue_date, model, status, aircraft_type, engine_type, year FROM `plane-data` as pd
+LEFT JOIN (
+SELECT UniqueCarrier, TailNum, AVG(ArrDelay - DepDelay) as AvgCatchUpTime, COUNT(*) as iloscWystapien
+               from main
+               WHERE (Year >= 1995)
+               GROUP BY UniqueCarrier, TailNum
+               HAVING iloscWystapien > 10 # if the plane has less than 10 flights, it's not reliable
+                  and AvgCatchUpTime is not null
+               ORDER BY UniqueCarrier, AvgCatchUpTime ) AS opoznienia
+ON pd.tailnum = opoznienia.TailNum
+WHERE AvgCatchUpTime is not null;"

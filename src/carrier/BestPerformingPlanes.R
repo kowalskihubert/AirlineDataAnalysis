@@ -10,7 +10,7 @@ source("./src/utils/MySqlConnect.R")
 
 # write.csv(dbGetQuery(db, queries$BestPlanesCatchUp), "./src/carrier/outputs/Best_Plane_For_Carrier_Catchup.csv", row.names = F)
 # write.csv(dbGetQuery(db, queries$BestPlanesDep), "./src/carrier/outputs/Best_Plane_For_Carrier_Dep.csv", row.names = F)
-# jeszcze ogólne
+# write.csv(dbGetQuery(db, queries$PlanesPerf), "./src/carrier/outputs/Planes_Performance.csv", row.names = F)
 
 bestPlanesCatchUp <- fread(file = "./src/carrier/outputs/Best_Plane_For_Carrier_Catchup.csv")[-(1:3),]
 bestPlanesDep <- fread(file = "./src/carrier/outputs/Best_Plane_For_Carrier_Dep.csv")[-(1:3),]
@@ -146,13 +146,7 @@ plotManu <- ggplot(planesPerformanceManu, aes(x = manufacturer, y = AvgMadeUpTim
 
 plotManu
 
-# Correlation AvgMadeUpTime - model
-
-
-# Pairs at the end to check general dependencies:
-pdataPairs <- planesPerformance %>%
-  select(UniqueCarrier, year, manufacturer, AvgMadeUpTimeDuringFlight)
-
+# TODO: Correlation AvgMadeUpTime - model
 
 
 
