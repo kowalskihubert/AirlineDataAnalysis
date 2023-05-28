@@ -60,6 +60,7 @@ createHeatMap <- function() {
     values <- as.vector(t(as.matrix(i[-1])))
     heat_matrix[[title]] <- values
   }
+  heat_matrix <- as.data.frame(apply(heat_matrix, 2, function(x) (x - min(x)) / (max(x) - min(x))))
   heat_matrix <- heat_matrix %>%
     rownames_to_column() %>%
     gather(colname, value, -rowname)
