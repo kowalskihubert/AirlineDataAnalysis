@@ -1,63 +1,388 @@
 ---
-title: "R Notebook"
+title: "Analiza danych opóźnień lotów"
 output: ioslides_presentation
-css: ./styles.css
+css: styles.css
 ---
+
 ```{r setup, include=FALSE}
 source("../src/utils/MySqlConnect.R", local = knitr::knit_global())
 
 ```
-## Problem
 
-## Największe lotniska w USA
-Query:
-```{r}
-cat(queries$FindBiggestAirports)
+# Warunki pogodowe a loty
+
+## Dane
+Dane o lotach i ich opóźnianiach pozyskane zostały z serwisu
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HG7NV7
+```{sql connection=db, echo=FALSE}
+SELECT * from main_sample
+limit 3;
+```
+<br/>
+Dane pogodowe dla kilku wybranych miast pochodzą z serwisu National Oceanic and Atmospheric Administration: https://www.noaa.gov/
+```{sql connection=db, echo=FALSE}
+Select * from `atlanta-weather`
+where TSUN is not null and AWND is not null and PRCP is not null
+and TMAX is not null and TMIN is not null and SNOW is not null and SNWD is not null
+limit 3;
+```
+<h3>Opis co znaczą poszczególne kolumny</h3>
+AWND - Average wind speed\
+PGTM - Peak gust time\
+PRCP - Precipitation\
+SNOW - Snowfall\
+SNWD - Snow depth\
+TAVG - Average temperature\
+TMAX - Maximum temperature\
+TMIN - Minimum temperature\
+TSUN - Sunshine duration\
+
+## Lotniska z najwięszką ilością opóźnień
+<h3>Reguły</h3>
+- Lotnisko musi mieć więcej niż 50000 lotów\
+- Brane pod uwagę so tylko loty w latach 2005-2007\
+- Do średnich opóźnień wliczane są także wartości zerowej oraz Nulle
+```{sql eval=FALSE, connection=db, echo=FALSE}
+Select airport, count(*) as totalFLights, avg(WeatherDelay) as averageWeatherDelay from main
+inner join airports ON (Trim(main.Origin) = Trim('"' from airports.iata))
+where Year between 2005 and 2007
+group by airport
+having totalFLights > 50000
+order by averageWeatherDelay desc
+limit 3;
+```
+```{r echo=FALSE}
+data <- head(read.csv("../src/weather/outputs/delayedAirports.csv"), 5)
+knitr::kable(data)
+```
+
+## Najbardziej opóźnione loty z Atlanty
+<h3>Reguły</h3>
+- Miasto musi mieć więcej niż 1000 lotów\
+- Brane pod uwagę so tylko loty w latach 2005-2007\
+- Do średnich opóźnień wliczane są także wartości zerowej oraz Nulle
+```{r echo=FALSE}
+data <- head(read.csv("../src/weather/outputs/atlantaDestinations.csv"), 5)
+knitr::kable(data)
+```
+
+## Tworzenie bazy danych Atlanta -> Baton Rouge
+<h3>Reguły</h3>
+- Brane pod uwagę so tylko loty w latach 2005-2007\
+- Do średnich wartości wliczane są także wartości zerowej oraz Nulle
+
+
+```{r echo=FALSE}
+data <- head(read.csv("../src/weather/outputs/AtlantaBTWeather.csv"), 5)
+knitr::kable(data)
+```
+<h3>Działanie</h3>
+Dla każdego dnia w roku 2005-2007 wyliczana jest średnia/suma wartość dla każdej kolumny.\
+Kolumny z literą A -> Atlanta, B-> Baton Rouge
+
+## Analiza
+<h3>Działania</h3>
+- Każda wartość jest kubełkowana do jednej z 5 kategorii\
+- Dla każdego kubełka wyliczana jest średnia wartość opóźnienia\
+W legendzie znajdują się przedziały kubełków
+
+
+<details>
+<summary>A_AWND</summary>
+<img alt="A_AWND" src="../src/weather/outputs/plots/A_AWND.png" width="100%"/>
+</details>
+
+<details>
+<summary>A_PGTM</summary>
+<img alt="A_PGTM" src="../src/weather/outputs/plots/A_PGTM.png" width="100%"/>
+</details>
+
+<details>
+<summary>A_PRCP</summary>
+<img alt="A_PRCP" src="../src/weather/outputs/plots/A_PRCP.png" width="100%"/>
+</details>
+
+<details>
+<summary>A_TAVG</summary>
+<img alt="A_TAVG" src="../src/weather/outputs/plots/A_TAVG.png" width="100%"/>
+</details>
+
+<details>
+<summary>A_TMAX</summary>
+<img alt="A_TMAX" src="../src/weather/outputs/plots/A_TMAX.png" width="100%"/>
+</details>
+
+<details>
+<summary>A_TMIN</summary>
+<img alt="A_TMIN" src="../src/weather/outputs/plots/A_TMIN.png" width="100%"/>
+</details>
+
+<details>
+<summary>B_AWND</summary>
+<img alt="B_AWND" src="../src/weather/outputs/plots/B_AWND.png" width="100%"/>
+</details>
+
+<details>
+<summary>B_PGTM</summary>
+<img alt="B_PGTM" src="../src/weather/outputs/plots/B_PGTM.png" width="100%"/>
+</details>
+
+<details>
+<summary>B_PRCP</summary>
+<img alt="B_PRCP" src="../src/weather/outputs/plots/B_PRCP.png" width="100%"/>
+</details>
+
+<details>
+<summary>B_TAVG</summary>
+<img alt="B_TAVG" src="../src/weather/outputs/plots/B_TAVG.png" width="100%"/>
+</details>
+
+<details>
+<summary>B_TMAX</summary>
+<img alt="B_TMAX" src="../src/weather/outputs/plots/B_TMAX.png" width="100%"/>
+</details>
+
+<details>
+<summary>B_TMIN</summary>
+<img alt="B_TMIN" src="../src/weather/outputs/plots/B_TMIN.png" width="100%"/>
+</details>
+<br/>
+
+<h3>Heatmapa</h3>
+
+<img alt="Delay heatmap" src="../src/weather/outputs/plots/heatmap.png" width="50%" height="70%"/>
+
+<h3>Miesieczne opóźnienia pogodowe</h3>
+<img alt="aaa" src="../src/weather/outputs/plots/weatherDelayOvertime.png" width="50%" height="70%"/>
+
+## Zmiana planów: Atlanta -> Gdziekolwiek
+<h3>Działania</h3>
+- Każda wartość jest kubełkowana do jednej z 5 kategorii\
+- Dla każdego kubełka wyliczana jest średnia wartość opóźnienia\
+W legendzie znajdują się przedziały kubełków
+```{r echo=FALSE}
+data <- head(read.csv("../src/weather/outputs/atlantaAnwhrWeather.csv"), 5)
+knitr::kable(data)
+```
+
+## Analiza
+<details>
+<summary>Comparison</summary>
+<div style="width:100%; display: flex">
+<img src="../src/weather/outputs/plotsBroader/weatherDelayOvertime.png" alt="Image 1" style="width: 48%;">
+<img src="../src/weather/outputs/plots/weatherDelayOvertime.png" alt="Image 2" style="width: 48%;">
+</div>
+</details>
+<br/>
+
+<details>
+<summary>AWND</summary>
+<img alt="AWND" src="../src/weather/outputs/plotsBroader/AWND.png" width="100%"/>
+</details>
+
+<details>
+<summary>PGTM</summary>
+<img alt="PGTM" src="../src/weather/outputs/plotsBroader/PGTM.png" width="100%"/>
+</details>
+
+<details>
+<summary>PRCP</summary>
+<img alt="PRCP" src="../src/weather/outputs/plotsBroader/PRCP.png" width="100%"/>
+</details>
+
+<details>
+<summary>SNOW</summary>
+<img alt="SNOW" src="../src/weather/outputs/plotsBroader/SNOW.png" width="100%"/>
+</details>
+
+<details>
+<summary>SNWD</summary>
+<img alt="SNWD" src="../src/weather/outputs/plotsBroader/SNWD.png" width="100%"/>
+</details>
+
+<details>
+<summary>TMAX</summary>
+<img alt="TMAX" src="../src/weather/outputs/plotsBroader/TMAX.png" width="100%"/>
+</details>
+
+<details>
+<summary>TMIN</summary>
+<img alt="TMIN" src="../src/weather/outputs/plotsBroader/TMIN.png" width="100%"/>
+</details>
+
+<br/>
+<h3>Heatmapa</h3>
+<img alt="Delay heatmap" src="../src/weather/outputs/plotsBroader/heatmap.png" width="50%" height="70%"/>
+
+# Analiza pogodowa na szerszą skalę
+
+## Opóźnienia kaskadowe i ich zależnośc od pogody
+
+<h3>Działania cities_delay</h3>
+1. Brana jest średnia wartość opóźnienia pogodowego dla miast(top 50)
+2. Musi być ponad 5000 lotów
+3. Lata 2000-2008
+4. LateAircraftDelay > 0
+
+<h3>Działania weather_cities_delay i weather_cities_weather_delay</h3>
+1. Brana jest średnia wartość opóźnienia pogodowego dla miast(top 50)
+2. Musi być ponad 500 lotów
+3. Lata 2000-2008
+4. LateAircraftDelay > WeatherDelay i WeatherDelay > 0
+
+
+```{r echo=FALSE, fig.height=5, fig.width=15}
+source("../src/weather/weatherCascade.R", local = knitr::knit_global())
+cascade <- read.csv("../src/weather/outputs/cascade.csv")
+cascadeWeather <- read.csv("../src/weather/outputs/cascadeWeather.csv")
+mapCities(cascade, cascadeWeather)
+```
+
+## Opóźnienia pogodowe a poszczególne stany
+```{r echo=FALSE, fig.height=5, fig.width=12}
+source("../src/weather/StateWeatherDelays.R", local = knitr::knit_global())
+states_weather_nonzero <- read.csv("../src/weather/outputs/StatesWeatherDelaysNonzero.csv")
+states_weather <- read.csv("../src/weather/outputs/StatesWeatherDelays.csv")
+de_monthly <- read.csv("../src/weather/outputs/DE_Monthly.csv")
+assign_shades_of_red(states_weather_nonzero)
+```
+<br/>
+```{r echo=FALSE, fig.height=5, fig.width=12}
+assign_shades_of_red(states_weather)
+```
+<br/>
+<h3>Zobaczmy co się dzieje w Delaware</h3>
+```{r echo=FALSE, fig.height=5, fig.width=15}
+DE_plot(de_monthly)
+```
+
+
+```{r include = F}
+library(dplyr)
+library(data.table)
+library(knitr)
+```
+
+# Które linie lotnicze są najmniej, a które najbardziej bezpieczne?
+# Które mają najwięcej opóźnień?
+
+## Problemy z bezpieczeństwem
+```{r echo = F, out.width="100%"}
+badSec <- fread(file = "../src/carrier/outputs/Bad_security_carrier.csv")
+replace_0 <- badSec$NumSecurityProblems
+replace_0[is.na(replace_0)] <- 0
+badSec$NumSecurityProblems <- replace_0
+
+sumSecProb <- sum(badSec$NumSecurityProblems)
+badSec <- badSec %>%
+        mutate(PercOfSecurityProblems = round(NumSecurityProblems/sumSecProb, 3)*100) %>%
+        mutate(NumSecProbPerPlane = round(NumSecurityProblems / AvgNumPlanes, 2))
+
+temp <- badSec$Description
+temp[temp == "America West Airlines Inc. (Merged with US Airways 9/05. Stopped reporting 10/07.)"] <- "America West Airlines Inc."
+temp[temp == "US Airways Inc. (Merged with America West 9/05. Reporting for both starting 10/07.)"] <- "US Airways Inc."
+badSec$Description <- temp
+
+badSec <- badSec %>%
+        arrange(-NumSecProbPerPlane)
+
+knitr::kable(head(badSec, 10))
 
 ```
-Res:
-```{r}
-read.csv("../src/weather/outputs/biggestAirports.csv")
-```
-## Najbardziej opóźniane loty z Chicago
-Query:
-```{r}
-cat(queries$MostDelayedChicagoFlights)
+
+
+## Problemy z bezpieczeństwem
+![](../src/carrier/plots/PercOfSecProblemsPerCarrier.png){width=100%,height=100%}
+
+## Problemy z bezpieczeństwem...
+```{r echo=F, warning = F, fig.width=12, fig.height=7}
+suppressMessages(source("../src/carrier/carriersWithSecProblems.R", local = knitr::knit_global()))
+interactivePlotSecProbPerPlane
 
 ```
-Res:
-```{r}
-read.csv("../src/weather/outputs/MostDelayedChicagoFlights.csv")
-```
-CVG - Cincinnati/Northern Kentucky International Airport
 
-## Loty Chicago -> Covington
-Query:
-```{r}
-cat(queries$FlightsFromChicagoToCovington)
 
-```
-Res:
-```{r}
-head(read.csv("../src/weather/outputs/FlightsFromChicagoToCovington.csv"))
-```
-## Loty Chicago -> Covington + Pogoda
-Query:
-```{r}
-cat(queries$ChicagoCovingtonWeather)
+## Problemy z bezpieczeństwem w czasie
+![](../src/carrier/plots/secDelaysByYear.gif){width=100%}
 
+## Opóźnienia z winy przewoźnika ...
+```{r echo = F, out.width="100%"}
+data <- fread(file = "../src/carrier/outputs/Bad_carrier_carrier_in_minutes_by_year.csv")
+data <- data %>%
+        mutate(CollectiveCarrierDelay = round(CollectiveCarrierDelay/60, 2)) %>%
+        mutate(DelayPerPlane = round(CollectiveCarrierDelay/NumPlanesThisYear, 2))
+
+knitr::kable(head(data, 5))
 ```
-Res:
-```{r}
-res <- head(read.csv("../src/weather/outputs/ChicagoCovingtonWeather.csv"), 1)
-for (col in colnames(res)) {
-  cat(col, res[[col]], "\n")
+
+## ...na przestrzeni lat
+![](../src/carrier/plots/carDelayByYear.gif){width=100%,height=100%}
+
+# Korelacja średnich opóźnień przewoźników i satysfakcji klientów
+
+## Dane
+https://www.statista.com/statistics/194941/customer-satisfaction-with-us-airlines-since-1995/
+```{r echo=F, out.width="100%"}
+satisfactionByYear <- fread(file = "../database/data/american-customer-satisfaction-index-scores-for-airlines-in-the-us-1995-2023.csv")
+satisfactionByYear <- satisfactionByYear %>%
+        rename(Year = V1) %>%
+        select(Year, `Southwest Airlines`, `Delta Air Lines`, `United Airlines`, `American Airlines`) %>%
+        filter(Year <= 2008 & Year >= 2003) %>%
+        mutate(Year = as.numeric(Year))
+
+values <- c()
+tmp <- satisfactionByYear %>%
+        select( `Southwest Airlines`, `Delta Air Lines`,`United Airlines`,`American Airlines` )
+for(i in 1:nrow(tmp)) {
+  values <- c(values, tmp[i])
 }
+names(values) <- NULL
+values <- unlist(values)
+satisfactionByYearTable <- data.frame(
+        Year = rep(2003:2008, each = 4),
+        Description = rep(c("Southwest Airlines Co.", "Delta Air Lines Inc.","United Air Lines Inc." ,"American Airlines Inc."), times = 6),
+        SatisfactionIndex = values
+)
+
+kable(satisfactionByYearTable)
+
 ```
-## Wyniki
-```{r , include=FALSE}
-source("../src/weather/WeatherConditionsOld.R", local = knitr::knit_global())
+
+## Zmiany na przestrzeni lat
+```{r echo=F, warning=F, fig.width=12, fig.height=7}
+suppressMessages(source("../src/carrier/satisfactionAndPerformanceForCarrier.R", local = knitr::knit_global()))
+plotSatiAnimated
+
 ```
-```{r }
-analysis()
+
+
+# Najmniej opóźnieniogenne samoloty każdego przewoźnika
+
+## Dane
+```{r echo=F}
+suppressMessages(source("../src/carrier/BestPerformingPlanes.R", local = knitr::knit_global()))
+
+kable(head(bestPlanesDep, 10))
 ```
+
+## Najlepszy samolot pod względem Departure Delay
+```{r echo=F}
+t <- theBestPlaneDep %>%
+        inner_join(plane_data, by=join_by(tailnum))
+kable(t)
+```
+
+## Najlepszy samolot pod względem nadrabiania czasu podczas lotu
+```{r echo=F}
+t <- theBestPlaneCatchUp %>%
+        inner_join(plane_data, by=join_by(tailnum))
+kable(t)
+```
+
+## Zależność wyników samolotu od roku produkcji
+![](../src/carrier/plots/PlanePerfAndProdYear.png){width="100%"}
+
+## Zależność wyników samolotu od producenta
+![](../src/carrier/plots/ManufacturerAndPerformance.png){width="100%"}
+
+# Dziękujemy za uwagę!!! :D

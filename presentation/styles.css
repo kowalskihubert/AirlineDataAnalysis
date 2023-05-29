@@ -26,7 +26,20 @@ slide[data-slide-num="7"] h2,
 slide[data-slide-num="8"] h2,
 slide[data-slide-num="9"] h2,
 slide[data-slide-num="11"] h2,
-slide[data-slide-num="12"] h2{
+slide[data-slide-num="12"] h2,
+slide[data-slide-num="15"] h2,
+slide[data-slide-num="16"] h2,
+slide[data-slide-num="17"] h2,
+slide[data-slide-num="18"] h2,
+slide[data-slide-num="19"] h2,
+slide[data-slide-num="20"] h2,
+slide[data-slide-num="22"] h2,
+slide[data-slide-num="23"] h2,
+slide[data-slide-num="25"] h2,
+slide[data-slide-num="26"] h2,
+slide[data-slide-num="27"] h2,
+slide[data-slide-num="28"] h2,
+slide[data-slide-num="29"] h2{
 	background: -webkit-linear-gradient(60deg, #5ebfe2, #f0f019);
 	font-family: Arial, sans-serif;
 	-webkit-background-clip: text;

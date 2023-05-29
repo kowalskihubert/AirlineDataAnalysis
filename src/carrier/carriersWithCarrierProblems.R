@@ -70,7 +70,7 @@ plotCarDelay <- ggplot(pdata4) +
   exit_fade()
 
 
-animate(plotCarDelay, fps = 20, duration = 30, width = 1800, height = 1000, 
-        renderer = gifski_renderer("src/carrier/plots/carDelayByYear.gif"))
+# animate(plotCarDelay, fps = 20, duration = 30, width = 1800, height = 1000,
+#         renderer = gifski_renderer("src/carrier/plots/carDelayByYear.gif"))
 
 

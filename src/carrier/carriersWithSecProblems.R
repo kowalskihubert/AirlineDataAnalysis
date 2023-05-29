@@ -1,12 +1,11 @@
 library(RMySQL)
 library(dplyr)
 library(ggplot2)
-library(ddplot)
 library(treemapify)
 library(ggthemr)
 library(colorspace)
 library(gganimate)
-library(gifski)
+# library(gifski)
 library(RColorBrewer)
 library(plotly)
 
