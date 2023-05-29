@@ -2,7 +2,7 @@ library(RMySQL)
 library(DBI)
 library(readr)
 
-db <- dbConnect(RMySQL::MySQL(), user = 'root', password = read_file("passwd.txt"), dbname = 'airplanes', host = 'localhost')
+db <- dbConnect(RMySQL::MySQL(), user = 'predki', password = 'predki', dbname = 'airplanes', host = 'localhost')
 
 queries_csv <- tryCatch(
   read.csv("../src/queries.csv", header = TRUE),

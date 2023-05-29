@@ -1,7 +1,8 @@
 ---
-title: "Mó wi li mi że nikim nie bęęęęędęęęęęę"
+title: "Title"
 output: ioslides_presentation
-css: ./styles.css
+css: styles.css
+
 ---
 
 ```{r setup, include=FALSE}
@@ -11,22 +12,33 @@ source("../src/utils/MySqlConnect.R", local = knitr::knit_global())
 
 # Warunki pogodowe a loty
 
-# Jak warunki pogodowe wpływają na opóźnienia lotów???
-
 ## Dane
-Opis skąd dane
-```{sql connection=db}
+
+Dane pogodowe dla kilku wybranych miast pochodzą z serwisu National Oceanic and Atmospheric Administration: https://www.noaa.gov/
+```{sql connection=db, echo=FALSE}
 Select * from `atlanta-weather`
 where TSUN is not null and AWND is not null and PRCP is not null
 and TMAX is not null and TMIN is not null and SNOW is not null and SNWD is not null
 limit 3;
 ```
-Opis co znaczą poszczególne kolumny
-
+<h3>Opis co znaczą poszczególne kolumny</h3>
+AWND - Average wind speed\
+PGTM - Peak gust time\
+PRCP - Precipitation\
+SNOW - Snowfall\
+SNWD - Snow depth\
+TAVG - Average temperature\
+TMAX - Maximum temperature\
+TMIN - Minimum temperature\
+TSUN - Sunshine duration\
 Obczajka ile jest nulli
 
 ## Lotniska z najwięszką ilością opóźnień
-```{sql eval=FALSE, connection=db}
+<h3>Reguły</h3>
+- Lotnisko musi mieć więcej niż 50000 lotów\
+- Brane pod uwagę so tylko loty w latach 2005-2007\
+- Do średnich opóźnień wliczane są także wartości zerowej oraz Nulle
+```{sql eval=FALSE, connection=db, echo=FALSE}
 Select airport, count(*) as totalFLights, avg(WeatherDelay) as averageWeatherDelay from main
 inner join airports ON (Trim(main.Origin) = Trim('"' from airports.iata))
 where Year between 2005 and 2007
@@ -41,67 +53,36 @@ knitr::kable(data)
 ```
 
 ## Najbardziej opóźnione loty z Atlanty
-```{sql eval=FALSE, connection=db, collapse=TRUE}
-Select a2.city, count(*) as totalFlights, avg(WeatherDelay) as averageWeatherDelay from main m
-inner join airports a1 ON (Trim(m.Origin) = Trim('"' from a1.iata))
-inner join airports a2 ON (Trim(m.Dest) = Trim('"' from a2.iata))
-where a1.city like '%Atlanta%'
-and Year between 2005 and 2007
-group by a2.city
-having totalFlights > 1000
-order by averageWeatherDelay desc
-limit 3;
-```
+<h3>Reguły</h3>
+- Miasto musi mieć więcej niż 1000 lotów\
+- Brane pod uwagę so tylko loty w latach 2005-2007\
+- Do średnich opóźnień wliczane są także wartości zerowej oraz Nulle
 ```{r echo=FALSE}
 data <- head(read.csv("../src/weather/outputs/atlantaDestinations.csv"), 5)
 knitr::kable(data)
 ```
 
 ## Tworzenie bazy danych Atlanta -> Baton Rouge
-```{sql eval=FALSE, connection=db}
-Create table AtlantaBT as (
-SELECT date, count(*) totalFlights, sum(Cancelled) as cancelled, Avg(ArrDelay), Avg(DepDelay), AVG(TaxiIn),avg(TaxiOut), Avg(WeatherDelay)  from main m
-inner join airports a1 ON (Trim(m.Origin) = Trim('"' from a1.iata))
-inner join airports a2 ON (Trim(m.Dest) = Trim('"' from a2.iata))
-where a1.city like '%Atlanta%' and a2.city like '%Baton Rouge%'
-and Year between 2005 and 2007
-group by date);
-```
-<details>
-<summary>AAAAA</summary>
+<h3>Reguły</h3>
+- Brane pod uwagę so tylko loty w latach 2005-2007\
+- Do średnich wartości wliczane są także wartości zerowej oraz Nulle
 
-```{sql eval=TRUE, connection=db, fig.show="hide"}
-SELECT
-    a.date,
-    avg(totalFlights) as totalFlights,
-    avg(cancelled) as cancelled,
-    Avg(`avg(ArrDelay)`) as ArrDelay,
-    Avg(`avg(DepDelay)`) as DepDelay,
-    Avg(`avg(TaxiIn)`) as TaxiIn,
-    Avg(`avg(TaxiOut)`) as TaxiOut,
-    Avg(`avg(WeatherDelay)`) as WeatherDelay,
-    Avg(aw.AWND) as A_AWND,
-    Avg(aw.PGTM) as A_PGTM,
-    Avg(aw.PRCP) as A_PRCP,
-    Avg(aw.TAVG) as A_TAVG,
-    Avg(aw.TMAX) as A_TMAX,
-    Avg(aw.TMIN) as A_TMIN,
-    Avg(bw.AWND) as B_AWND,
-    Avg(bw.PGTM) as B_PGTM,
-    Avg(bw.PRCP) as B_PRCP,
-    Avg(bw.TAVG) as B_TAVG,
-    Avg(bw.TMAX) as B_TMAX,
-    Avg(bw.TMIN) as B_TMIN
-from AtlantaBT a
-inner join `atlanta-weather` aw on (a.date = aw.DATE)
-inner join `br-weather` bw on a.date = bw.DATE
-group by date
-limit 5;
 
+```{r echo=FALSE}
+data <- head(read.csv("../src/weather/outputs/AtlantaBTWeather.csv"), 5)
+knitr::kable(data)
 ```
-</details>
+<h3>Działanie</h3>
+Dla każdego dnia w roku 2005-2007 wyliczana jest średnia/suma wartość dla każdej kolumny.\
+Kolumny z literą A -> Atlanta, B-> Baton Rouge
 
 ## Analiza
+<h3>Działania</h3>
+- Każda wartość jest kubełkowana do jednej z 5 kategorii\
+- Dla każdego kubełka wyliczana jest średnia wartość opóźnienia\
+W legendzie znajdują się przedziały kubełków
+
+
 <details>
 <summary>A_AWND</summary>
 <img alt="A_AWND" src="../src/weather/outputs/plots/A_AWND.png" width="100%"/>
@@ -162,62 +143,19 @@ limit 5;
 <img alt="B_TMIN" src="../src/weather/outputs/plots/B_TMIN.png" width="100%"/>
 </details>
 <br/>
-Inne wykresy
 
-<details>
-<summary>Delay heatmap</summary>
+<h3>Heatmapa</h3>
+
 <img alt="Delay heatmap" src="../src/weather/outputs/plots/heatmap.png" width="50%" height="70%"/>
-</details>
 
-<details>
-<summary>Delay heatmap2</summary>
-<img alt="Delay heatmap2" src="../src/weather/outputs/plots/heatmap2.png" width="50%" height="70%"/>
-</details>
-
-Jeszcze inny wykres
-
-<details>
-<summary>Nwm</summary>
+<h3>Miesieczne opóźnienia pogodowe</h3>
 <img alt="aaa" src="../src/weather/outputs/plots/weatherDelayOvertime.png" width="50%" height="70%"/>
 
-## Zmiana planów: Atlanta ale gdziekolwiek
-<details>
-<summary>AAAAA</summary>
-```{sql eval=FALSE, connection=db, collapse=TRUE}
-Create table atlanta as (Select date, a2.state, a2.city, Cancelled, Distance, ArrDelay,
-    DepDelay, TaxiOut, TaxiIn, WeatherDelay
-from main m
-      inner join airports a1 ON (Trim(m.Origin) = Trim('"' from a1.iata))
-      inner join airports a2 ON (Trim(m.Dest) = Trim('"' from a2.iata))
-where a1.city like '%Atlanta%'
-and year between 2005 and 2007);
-```
-</details>
-<details>
-<summary>AAAAA</summary>
-```{sql eval=FALSE, connection=db, }
-Select m.date,
-       Count(*)            as Flights,
-       sum(m.Cancelled)    as Cancelled,
-       avg(m.Distance)     as Distance,
-       avg(m.ArrDelay)     as ArrDelay,
-       avg(m.DepDelay)     as DepDelay,
-       avg(m.TaxiOut)      as TaxiOut,
-       avg(m.TaxiIn)       as TaxiIn,
-       avg(m.WeatherDelay) as WeatherDelay,
-       avg(w.AWND)         as AWND,
-       avg(w.PGTM)         as PGTM,
-       avg(w.PRCP)         as PRCP,
-       avg(w.SNOW)         as SNOW,
-       avg(w.SNWD)         as SNWD,
-       avg(w.TMAX)         as TMAX,
-       avg(w.TMIN)         as TMIN
-from atlanta m
-         inner join `atlanta-weather` w on (m.date = w.date)
-group by m.date
-LIMIT 5;
-```
-</details>
+## Zmiana planów: Atlanta -> Gdziekolwiek
+<h3>Działania</h3>
+- Każda wartość jest kubełkowana do jednej z 5 kategorii\
+- Dla każdego kubełka wyliczana jest średnia wartość opóźnienia\
+W legendzie znajdują się przedziały kubełków
 ```{r echo=FALSE}
 data <- head(read.csv("../src/weather/outputs/atlantaAnwhrWeather.csv"), 5)
 knitr::kable(data)
@@ -231,6 +169,7 @@ knitr::kable(data)
 <img src="../src/weather/outputs/plots/weatherDelayOvertime.png" alt="Image 2" style="width: 48%;">
 </div>
 </details>
+<br/>
 
 <details>
 <summary>AWND</summary>
@@ -268,64 +207,26 @@ knitr::kable(data)
 </details>
 
 <br/>
-Inne wykresy
-
-<details>
-<summary>Delay heatmap</summary>
+<h3>Heatmapa</h3>
 <img alt="Delay heatmap" src="../src/weather/outputs/plotsBroader/heatmap.png" width="50%" height="70%"/>
-</details>
-
-<details>
-<summary>Delay heatmap2</summary>
-<img alt="Delay heatmap2" src="../src/weather/outputs/plotsBroader/heatmap2.png" width="50%" height="70%"/>
-</details>
 
 # Analiza pogodowa na szerszą skalę
 
 ## Opóźnienia kaskadowe i ich zależnośc od pogody
 
-Opóźnienia kaskadowe, bez względu na pogodę
-<details>
-<summary>Query</summary>
-```{sql eval=FALSE, connection=db, }
-SELECT
-    city,
-    count(*) as totalFlights,
-    avg(LateAircraftDelay) as avgLateAircraftDelay,
-    avg(latitude) as Latitude,
-    avg(longitude) as Longitude
-from main m
-inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
-where LateAircraftDelay > 0 and year between 2000 and 2008
-group by city
-having totalFlights > 5000
-order by avgLateAircraftDelay desc
-limit 50;
-```
-</details>
+<h3>Działania cities_delay</h3>
+1. Brana jest średnia wartość opóźnienia pogodowego dla miast(top 50)
+2. Musi być ponad 5000 lotów
+3. Lata 2000-2008
+4. LateAircraftDelay > 0
+
+<h3>Działania weather_cities_delay i weather_cities_weather_delay</h3>
+1. Brana jest średnia wartość opóźnienia pogodowego dla miast(top 50)
+2. Musi być ponad 500 lotów
+3. Lata 2000-2008
+4. LateAircraftDelay > WeatherDelay i WeatherDelay > 0
 
 
-Opóźniania kaskadowe, gdzie wystąpiło opóźnienie pogodowe
-<details>
-<summary>Query</summary>
-```{sql eval=FALSE, connection=db, }
-SELECT
-    city,
-    count(*) as totalFlights,
-    avg(LateAircraftDelay) as avgLateAircraftDelay,
-    avg(latitude) as Latitude,
-    avg(longitude) as Longitude
-from main m
-inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
-where LateAircraftDelay > WeatherDelay and WeatherDelay > 0 and year between 2000 and 2008
-group by city
-having totalFlights > 500
-order by avgLateAircraftDelay desc
-limit 50;
-```
-</details>
-
-Rezultat
 ```{r echo=FALSE, fig.height=5, fig.width=15}
 source("../src/weather/weatherCascade.R", local = knitr::knit_global())
 cascade <- read.csv("../src/weather/outputs/cascade.csv")
@@ -334,45 +235,21 @@ mapCities(cascade, cascadeWeather)
 ```
 
 ## Opóźnienia pogodowe a poszczególne stany
-<details>
-<summary>Query</summary>
-```{sql eval=FALSE, connection=db, }
-SELECT s.state           as StateName,
-       a.state           as StateShort,
-       avg(c.latitude)   as Latitude,
-       avg(c.longitude)  as Longitude,
-       avg(WeatherDelay) as AvgWeatherDelay,
-       sum(Cancelled)    as CancelledFlights
-from main m
-         inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
-         inner join states s ON (Trim('"' from a.state) = Trim(s.Abbreviation))
-         inner join capitals c ON (Trim('"' from s.state) = Trim(c.name))
-where WeatherDelay >= 0
-group by s.state, a.state
-order by s.state;
-
-
-SELECT year,month,
-avg(DepDelay)     as AvgDepDelay,
-avg(WeatherDelay) as AvgWeatherDelay,
-sum(Cancelled)    as CancelledFlights
-
-from main m
-inner join airports a ON (Trim(m.Origin) = Trim('"' from a.iata))
-WHERE state = '"DE"' and( WeatherDelay >= 0 or Cancelled = 1)
-group by year,month
-order by year,month;
-```
-</details>
-
-```{r echo=FALSE, fig.height=5, fig.width=15}
+```{r echo=FALSE, fig.height=5, fig.width=12}
 source("../src/weather/StateWeatherDelays.R", local = knitr::knit_global())
 states_weather_nonzero <- read.csv("../src/weather/outputs/StatesWeatherDelaysNonzero.csv")
 states_weather <- read.csv("../src/weather/outputs/StatesWeatherDelays.csv")
 de_monthly <- read.csv("../src/weather/outputs/DE_Monthly.csv")
 
 assign_shades_of_red(states_weather_nonzero)
+
+```
+<br/>
+```{r echo=FALSE, fig.height=5, fig.width=12}
 assign_shades_of_red(states_weather)
+```
+<br/>
+<h3>Zobaczmy co się dzieje w Delaware</h3>
+```{r echo=FALSE, fig.height=5, fig.width=15}
 DE_plot(de_monthly)
 ```
-
