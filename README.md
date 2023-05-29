@@ -2,19 +2,9 @@
 
 [LIVE SERVER](https://adamkaniasty.github.io/AirlineDataAnalysis/)
 
-Ilościowe:
-
-- czy istnieje zależność między ilością lotów w danym momencie czasu (np. na jednego mieszkańca) a pkb per capita w tym
-  czasie
-- ile czasu potrzebuje lotnictwo USA żeby pozbierać się po katastrofie lotniczej (porównać średnią ilość lotów i
-  opóźnień z tymi np w tydzień po katastrofie)
-- Ewentualnie spróbować przewidzieć na za 2tyg na podstawie pogody, dla wybranego lotniska jaki % lotów będzie
-  opóźnionych
-
 Ze strony pasażera:
 
-- jakie warunki warunki pogodowe wpływają na opóźnienia związane z pogodą (ewentualnie cancelację lotów), czy
-  długotrwale utrzymująca się zła pogoda powoduje jakieś duże zastoje
+- jakie warunki warunki pogodowe wpływają na opóźnienia związane z pogodą 
 - przez które lotniska nie warto latać z przesiadką na skutek opóźnień kaskadpowych
 - mapa połączeń najbardziej opóźnieniogennych
 

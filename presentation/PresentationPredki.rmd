@@ -13,7 +13,13 @@ source("../src/utils/MySqlConnect.R", local = knitr::knit_global())
 # Warunki pogodowe a loty
 
 ## Dane
-
+Dane o lotach i ich opóźnianiach pozyskane zostały z serwisu
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HG7NV7
+```{sql connection=db, echo=FALSE}
+SELECT * from main_sample
+limit 3;
+```
+<br/>
 Dane pogodowe dla kilku wybranych miast pochodzą z serwisu National Oceanic and Atmospheric Administration: https://www.noaa.gov/
 ```{sql connection=db, echo=FALSE}
 Select * from `atlanta-weather`
@@ -31,7 +37,6 @@ TAVG - Average temperature\
 TMAX - Maximum temperature\
 TMIN - Minimum temperature\
 TSUN - Sunshine duration\
-Obczajka ile jest nulli
 
 ## Lotniska z najwięszką ilością opóźnień
 <h3>Reguły</h3>
@@ -240,9 +245,7 @@ source("../src/weather/StateWeatherDelays.R", local = knitr::knit_global())
 states_weather_nonzero <- read.csv("../src/weather/outputs/StatesWeatherDelaysNonzero.csv")
 states_weather <- read.csv("../src/weather/outputs/StatesWeatherDelays.csv")
 de_monthly <- read.csv("../src/weather/outputs/DE_Monthly.csv")
-
 assign_shades_of_red(states_weather_nonzero)
-
 ```
 <br/>
 ```{r echo=FALSE, fig.height=5, fig.width=12}

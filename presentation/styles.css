@@ -20,7 +20,13 @@ hgroup {
 }
 slide[data-slide-num="3"] h2,
 slide[data-slide-num="4"] h2,
-slide[data-slide-num="5"] h2 {
+slide[data-slide-num="5"] h2,
+slide[data-slide-num="6"] h2,
+slide[data-slide-num="7"] h2,
+slide[data-slide-num="8"] h2,
+slide[data-slide-num="9"] h2,
+slide[data-slide-num="11"] h2,
+slide[data-slide-num="12"] h2{
 	background: -webkit-linear-gradient(60deg, #5ebfe2, #f0f019);
 	font-family: Arial, sans-serif;
 	-webkit-background-clip: text;
