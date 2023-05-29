@@ -8,14 +8,15 @@ library(colorspace)
 library(gganimate)
 library(gifski)
 library(RColorBrewer)
+library(plotly)
 
-source("./src/utils/MySqlConnect.R")
+# source("./src/utils/MySqlConnect.R")
 
 # write.csv(dbGetQuery(db, queries$CarriersSecProblems), "./src/carrier/outputs/Bad_security_carrier.csv", row.names = F)
 # write.csv(dbGetQuery(db, queries$CarriersSecProblemsByYear), "./src/carrier/outputs/Bad_security_carrier_by_year.csv", row.names = F )
 
-badSec <- read.csv("./src/carrier/outputs/Bad_security_carrier.csv", header = T, sep = ",")
-badSecByYear <- read.csv("./src/carrier/outputs/Bad_security_carrier_by_year.csv", header = T, sep = ",")
+badSec <- read.csv("../src/carrier/outputs/Bad_security_carrier.csv", header = T, sep = ",")
+badSecByYear <- read.csv("../src/carrier/outputs/Bad_security_carrier_by_year.csv", header = T, sep = ",")
 
 replace_0 <- badSec$NumSecurityProblems
 replace_0[is.na(replace_0)] <- 0
@@ -201,8 +202,8 @@ p <- ggplot(pdata3) +
     exit_fade()
 
 
-animate(p, fps = 20, duration = 30, width = 1800, height = 1000, 
-        renderer = gifski_renderer("src/carrier/plots/secDelaysByYear.gif"))
+# animate(p, fps = 20, duration = 30, width = 1800, height = 1000, 
+#         renderer = gifski_renderer("src/carrier/plots/secDelaysByYear.gif"))
 
 
 
