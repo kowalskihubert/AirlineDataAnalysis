@@ -6,7 +6,7 @@ Ze strony pasażera:
 
 - jakie warunki warunki pogodowe wpływają na opóźnienia związane z pogodą 
 - przez które lotniska nie warto latać z przesiadką na skutek opóźnień kaskadpowych
-- mapa połączeń najbardziej opóźnieniogennych
+- mapa stanów z największymi opóźnieniami
 
 Ze strony przewoźnika:
 
