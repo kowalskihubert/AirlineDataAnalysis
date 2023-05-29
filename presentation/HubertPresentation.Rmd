@@ -18,11 +18,45 @@ library(data.table)
 library(knitr)
 ```
 
-# Spróbujmy jak wyglądają gify
+# Które linie lotnicze są najmniej, a które najbardziej bezpieczne? \n Które mają najwięcej opóźnień?
 
-## Carrier Delays
-Tabelka:
-```{r echo = F, out.width="100%"} 
+## Problemy z bezpieczeństwem
+```{r echo = F, out.width="100%"}
+badSec <- fread(file = "../src/carrier/outputs/Bad_security_carrier.csv")
+replace_0 <- badSec$NumSecurityProblems
+replace_0[is.na(replace_0)] <- 0
+badSec$NumSecurityProblems <- replace_0
+
+sumSecProb <- sum(badSec$NumSecurityProblems)
+badSec <- badSec %>%
+  mutate(PercOfSecurityProblems = round(NumSecurityProblems/sumSecProb, 3)*100) %>%
+  mutate(NumSecProbPerPlane = round(NumSecurityProblems / AvgNumPlanes, 2))
+
+temp <- badSec$Description
+temp[temp == "America West Airlines Inc. (Merged with US Airways 9/05. Stopped reporting 10/07.)"] <- "America West Airlines Inc."
+temp[temp == "US Airways Inc. (Merged with America West 9/05. Reporting for both starting 10/07.)"] <- "US Airways Inc."
+badSec$Description <- temp
+
+badSec <- badSec %>%
+  arrange(-NumSecProbPerPlane)
+
+knitr::kable(head(badSec, 10))
+
+```
+
+
+## Problemy z bezpieczeństwem
+![](../src/carrier/plots/PercOfSecProblemsPerCarrier.png){width=100%,height=100%}
+
+## Problemy z bezpieczeństwem
+![](https://github.com/AdamKaniasty/AirlineDataAnalysis/blob/main/src/carrier/plots/SecProbPerPlaneInteractive.html) //nie działa
+
+
+## Problemy z bezpieczeństwem
+![](../src/carrier/plots/secDelaysByYear.gif){width=100%}
+
+## Opóźnienia z winy przewoźnika
+```{r echo = F, out.width="100%"}
 data <- fread(file = "../src/carrier/outputs/Bad_carrier_carrier_in_minutes_by_year.csv")
 data <- data %>%
   mutate(CollectiveCarrierDelay = round(CollectiveCarrierDelay/60, 2)) %>%
@@ -31,9 +65,6 @@ data <- data %>%
 knitr::kable(head(data, 5))
 ```
 
-## Gif:
+## Zmiany na przestrzeni lat
 ![](../src/carrier/plots/carDelayByYear.gif){width=100%,height=100%}
-
-# gif nr 2:
-<img src="../src/carrier/plots/carDelayByYear.gif" width="1000" height="600" />
 
