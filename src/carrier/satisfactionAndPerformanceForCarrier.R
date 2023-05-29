@@ -6,11 +6,14 @@ library(colorspace)
 library(RColorBrewer)
 library(corrplot)
 library(ggborderline)
+library(plotly)
+library(ggthemes)
 
-source("./src/utils/MySqlConnect.R")
 
-badCarByYear <- fread(file = "./src/carrier/outputs/Bad_carrier_carrier_in_minutes_by_year.csv")
-satisfactionByYear <- fread(file = "./database/data/american-customer-satisfaction-index-scores-for-airlines-in-the-us-1995-2023.csv")
+# source("./src/utils/MySqlConnect.R")
+
+badCarByYear <- fread(file = "../src/carrier/outputs/Bad_carrier_carrier_in_minutes_by_year.csv")
+satisfactionByYear <- fread(file = "../database/data/american-customer-satisfaction-index-scores-for-airlines-in-the-us-1995-2023.csv")
 
 replace_0 <- badCarByYear$CollectiveCarrierDelay
 replace_0[is.na(replace_0)] <- 0

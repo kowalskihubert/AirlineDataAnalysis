@@ -6,14 +6,17 @@ library(colorspace)
 library(RColorBrewer)
 library(corrplot)
 
-source("./src/utils/MySqlConnect.R")
+# source("./src/utils/MySqlConnect.R")
 
 # write.csv(dbGetQuery(db, queries$BestPlanesCatchUp), "./src/carrier/outputs/Best_Plane_For_Carrier_Catchup.csv", row.names = F)
 # write.csv(dbGetQuery(db, queries$BestPlanesDep), "./src/carrier/outputs/Best_Plane_For_Carrier_Dep.csv", row.names = F)
 # write.csv(dbGetQuery(db, queries$PlanesPerf), "./src/carrier/outputs/Planes_Performance.csv", row.names = F)
 
-bestPlanesCatchUp <- fread(file = "./src/carrier/outputs/Best_Plane_For_Carrier_Catchup.csv")[-(1:3),]
-bestPlanesDep <- fread(file = "./src/carrier/outputs/Best_Plane_For_Carrier_Dep.csv")[-(1:3),]
+plane_data <- read.csv("../database/data/plane_data.csv", header = TRUE, sep = ",")
+carriers <- read.csv("../database/data/carriers.csv", header = TRUE, sep = ",")
+
+bestPlanesCatchUp <- fread(file = "../src/carrier/outputs/Best_Plane_For_Carrier_Catchup.csv")[-(1:3),]
+bestPlanesDep <- fread(file = "../src/carrier/outputs/Best_Plane_For_Carrier_Dep.csv")[-(1:3),]
 
 bestPlanesCatchUp <- bestPlanesCatchUp %>%
   select(UniqueCarrier, tailnum, AvgCatchUpTime) %>%
@@ -39,12 +42,12 @@ theBestPlaneCatchUp <- bestPlanesCatchUp %>%
   head(3)
 theBestPlaneCatchUp$Description[3] <- "US Airways Inc."
 
-write_csv(theBestPlaneCatchUp, file = "src/carrier/outputs/theBestPlaneCatchUp.csv")
-write_csv(theBestPlaneDep, file = "src/carrier/outputs/theBestPlaneDep.csv")
+# write_csv(theBestPlaneCatchUp, file = "src/carrier/outputs/theBestPlaneCatchUp.csv")
+# write_csv(theBestPlaneDep, file = "src/carrier/outputs/theBestPlaneDep.csv")
 
 
-avgfleetage <- fread(file = "src/carrier/outputs/AvgFleetAgeForCarrier.csv")
-planesPerformance <- fread(file = "src/carrier/outputs/Planes_Performance.csv")
+avgfleetage <- fread(file = "../src/carrier/outputs/AvgFleetAgeForCarrier.csv")
+planesPerformance <- fread(file = "../src/carrier/outputs/Planes_Performance.csv")
 
 planesPerformance <- planesPerformance %>%
   mutate(AvgMadeUpTimeDuringFlight = -AvgCatchUpTime) %>%
