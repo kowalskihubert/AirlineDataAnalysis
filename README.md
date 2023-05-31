@@ -7,7 +7,7 @@
 ### Założenia projektu:
 
 - Postawienie interesujących pytań dotyczących opóźnień lotów pasażerskich na terenie USA w latach 1987-2008
-- Eksploracja danych dostępnych na stronie: [](https://app.idroo.com/boards/uQIuWpBpP0)
+- Eksploracja danych dostępnych na stronie: [](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/HG7NV7)
 - Wizualizacja wyników zapytań
 
 ### Postawione pytania:
